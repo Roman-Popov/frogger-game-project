@@ -1,0 +1,389 @@
+
+// >>>>>> Class declaration section >>>>>>
+
+class Enemy {
+    constructor(crazySpeed) {
+        this.availableY = [52, 135, 218, 301];
+        this.x = -(Math.round(Math.random() * 200) + 25 * speed + 100);
+        this.y = this.availableY[Math.round(Math.random() * 3)];
+        this.speedMult = crazySpeed || Math.round(Math.random() * 3) + 3;
+        this.reserve = 0;
+        this.collision = false;
+        this.sprite = 'images/bugs/blue-enemy-bug.png';
+        this.dead = false;
+    }
+
+
+    // Update the enemy's position, required method for game
+    // Parameter: dt, a time delta between ticks
+    update(dt) {
+        this.x += speed * this.speedMult * dt * 10;
+
+        // If the bug has run a distance up to the end
+        if (this.x > 550) {
+            this.speedMult = Math.ceil(Math.random() * 10);     // from 1 to 10
+
+            // Adding some more time for prepare arriving fast enemies
+            this.reserve = this.speedMult > 7 ? (this.speedMult - 7) * 50 : 0;
+
+            // Updating initial enemy position
+            this.x = -(Math.round(Math.random() * 200) + 25 * speed + 100 + this.reserve);
+            this.y = this.availableY[Math.round(Math.random() * 4)]
+
+            if (!this.dead) {
+                this.sprite = (this.speedMult < 3) ? 'images/bugs/brown-enemy-bug.png' :
+                              (this.speedMult < 6) ? 'images/bugs/blue-enemy-bug.png' :
+                              (this.speedMult < 8) ? 'images/bugs/green-enemy-bug.png' :
+                                                     'images/bugs/red-enemy-bug.png';
+            } else {
+                this.sprite = 'images/bugs/ghost-enemy-bug.png';
+            }
+        }
+
+        // If player is alive && in the same row and column as an enemy
+        if ((player.lives != 0 && this.x > player.x - 70 && this.x < player.x + 60) && this.y === player.y) {
+            player.collision = true;
+        }
+    }
+
+
+    // Draw the enemy on the screen, required method for game
+    render() {
+
+    }
+}
+
+
+
+class Player {
+    constructor() {
+        this.availableX = [0, 101, 202, 303, 404];
+        this.availableGear = [1, 2, 3, 3, 4, 4, 5];
+        this.x = 202;
+        this.y = 384;
+        this.lives = 3;
+        this.score = 0;
+        this.collision = false;
+        this.allowAboard = false;
+        this.aboard = false;
+        this.movable = true;
+        this.stopGame = false;
+        this.sprite = 'images/char-boy.png';
+    }
+
+
+    goAshore() {
+        if (this.x > 450) return;  // Too late to go ashore
+        this.y = 52;
+        this.x = this.availableX[Math.round(this.x / 505 * 5)];
+    }
+
+
+    handleInput(key) {
+        if (this.movable) {
+            switch (key) {
+                case 'up':
+                    if (this.y > 52 || this.allowAboard) this.y -= 83;
+                    break;
+                case 'down':
+                    if (this.y != 384) {
+                        if (this.aboard) {
+                            this.goAshore();
+                        } else {
+                            this.y += 83;
+                        }
+                    }
+                    break;
+                case 'left':
+                    if (this.x != 0 && !this.aboard) this.x -= 101;
+                    break;
+                case 'right':
+                    if (this.x != 404 && !this.aboard) this.x += 101;
+                    break;
+                default:
+                    console.log('Wrong key! To move your character use arrow keys.')
+                    break;
+            }
+        }
+    }
+
+
+    updateSpeed() {
+        speed = this.availableGear[letter.counter] * initialSpeed;
+    }
+
+
+    gameOver() {
+        this.movable = false;
+        this.stopGame = true;
+        speed = 3;
+
+        // Enemy invasion :D
+        for (let i = 0; i < 30; i++) {
+            allEnemies.push(new Enemy(Math.ceil(Math.random() * 10)));
+            allEnemies[allEnemies.length - 1].x = 540;
+        }
+    }
+
+
+    update() {
+        // if player collected all the letters
+        if (letter.counter === letter.availableSprites.length && !this.stopGame) {
+            console.log('You have won!');
+            allEnemies.forEach(enemy => enemy.speedMult = 10);  // All alive enemies are quickly escaping from the screen
+            this.gameOver();
+            allEnemies.forEach(enemy => enemy.dead = true)  // All enemies become ghosts
+            return;
+        } else if (this.stopGame) {
+            return;     // Stop player updating if the game has been over
+        }
+
+        // If the player is in the boat
+        if (this.aboard) {
+            this.x = boat.x;
+
+            // If the player swam away
+            if (this.x > 540) {
+                if (letter.taken) {
+                    this.updateSpeed();
+                    letter.counter += 1;
+                }
+                this.score += (50 + jewel.taken * jewel.value) * speed + letter.taken * letter.value;
+
+                // Adding new enemy if the letter was collected
+                if (letter.taken) {
+                    letter.taken = false;
+                    allEnemies.push(new Enemy());
+                }
+
+                jewel.taken = false;
+                this.x = 404;
+                this.y = 384;
+                this.aboard = false;
+                console.log(`Your score: ${this.score}`);
+            }
+        }
+
+        // If player has collided with the enemy
+        if (this.collision) {
+            jewel.taken = false;
+            letter.taken = false;
+            this.collision = false;
+            this.lives -= 1;
+
+            if (this.lives === 0) {
+                console.log('Game over')
+                this.sprite = 'images/ghost.png';   // Player become a ghost
+                this.gameOver();
+                this.stopGame = true;
+            } else {
+                this.x = 202;
+                this.y = 384;
+            }
+        }
+    }
+
+
+    // Draw the player on the screen, required method for game
+    render() {
+
+    }
+}
+
+
+
+class Boat {
+    constructor(x) {
+        this.x = x || -150;
+        this.y = -31;
+        this.multAboard = 1;
+        this.sprite = 'images/Boat.png';
+    }
+
+
+    update(dt) {
+        // Stop boat updating if it sailed away and game was finished
+        if (player.stopGame && this.x === -150) {
+            return;
+        }
+
+        this.x += speed * dt * 20 * this.multAboard + speed * player.stopGame;
+
+        if (player.x > this.x - 65 && player.x < this.x + 100) {
+            player.allowAboard = true;
+            if (player.y === this.y) {
+                player.aboard = true;
+                player.allowAboard = false;
+            } else {
+                player.aboard = false;
+            }
+        } else {
+            player.allowAboard = false;
+        }
+
+        if (player.aboard) {
+            player.x = this.x;
+            this.multAboard = 3;
+        } else {
+            this.multAboard = 1;
+        }
+
+        // Return the boat to the beginning if it sailed away
+        if (this.x > 550) this.x = -150;
+    }
+
+
+    // Draw the boat on the screen, required method for game
+    render() {
+
+    }
+}
+
+
+
+class Item {
+    constructor(options = {}) {
+        this.presence = false;
+        this.availableX = [0, 101, 202, 303, 404];
+        this.availableY = [52, 135, 218, 301];
+        this.availableSprites = ['images/gems/Gem Orange.png', 'images/gems/Gem Purple.png', 'images/gems/Gem White.png'];
+        this.availableValue = [50, 100, 150];
+        this.value = 0;
+        this.chance = options.chance || 0.01;
+        this.showTimeDelay = options.showTimeDelay || 5000;
+        this.multDelay = options.multDelay || 1;
+        this.taken = false;
+        this.x;
+        this.y;
+        this.sprite;
+        this.lastTime = Date.now();
+        this.now;
+    }
+
+
+    // Choosing a random item from available ones
+    chooseItem() {
+        let itemType = Math.floor(Math.random() * this.availableSprites.length);
+        this.sprite = this.availableSprites[itemType];
+        this.value = this.availableValue[itemType];
+    }
+
+
+    isTakenItem() {
+        if (this.x === player.x && this.y === player.y && !this.taken) {
+            this.taken = true;
+            // Player takes the item, item becomes small
+            this.sprite = this.sprite.replace('Gem ', 'Small Gem ');
+            console.log('taken')
+        } else if (this.sprite && !this.taken) {
+            // If item exists but player lost it. Item become normal-sized
+            this.sprite = this.sprite.replace('Small ', '');
+        }
+    }
+
+
+    // Pin the item to the player
+    moveTakenItem() {
+            this.x = player.x;
+            this.y = player.y;
+            this.lastTime = this.now;
+    }
+
+
+    hideItem() {
+        this.x = -5000;
+        this.y = -5000;
+        this.presence = false;
+        this.lastTime = this.now;
+    }
+
+    update() {
+        if (player.stopGame) return; // Stop item updating if the game has been over
+        this.now = Date.now();
+        let deltaT = (this.now - this.lastTime);
+        // Set the min delay for deleting the item; If it's too small - set to 1.5s
+        let deleteTimeDelay = deltaT > 1500 ? (1.5 - 0.2 * speed) * this.showTimeDelay * this.multDelay : 1500;
+        // Trying to show the item
+        if (!this.presence && Math.random() < this.chance) {
+            // If enough time has passed after the previous action with the item
+            if (deltaT > this.showTimeDelay) {
+                this.chooseItem();
+                // Random position of item
+                this.x = this.availableX[Math.floor(Math.random() * this.availableX.length)];
+                this.y = this.availableY[Math.floor(Math.random() * this.availableY.length)];
+                this.presence = true;
+                this.lastTime = this.now;
+            }
+        // Deletting item from the screen if there has passed enough time, item exists and it's not taken
+        } else if (deltaT > deleteTimeDelay && this.presence && !this.taken) {
+            this.hideItem();
+        }
+
+        // If the item is taken - it becomes small, else - item has normal size
+        this.isTakenItem();
+
+        if (this.taken) {
+            this.moveTakenItem();
+        }
+    }
+
+
+    // Draw the item on the screen, required method for game
+    render() {
+
+    }
+}
+
+
+
+class Letter extends Item {
+    constructor(options = {}) {
+        super();
+        this.availableSprites = ['images/gems/letters/Gem U.png', 'images/gems/letters/Gem D.png',
+            'images/gems/letters/Gem A.png', 'images/gems/letters/Gem C.png',
+            'images/gems/letters/Gem I.png', 'images/gems/letters/Gem T.png',
+            'images/gems/letters/Gem Y.png'];
+        this.availableValue = [250, 500, 750, 1000, 1500, 2000, 3000];
+        this.chance = options.chance || 0.0025;
+        this.showTimeDelay = options.showTimeDelay || 15000;
+        this.multDelay = options.multDelay || 0.5;
+        this.counter = 0;
+    }
+
+    chooseItem() {
+        this.sprite = this.availableSprites[this.counter];
+        this.value = this.availableValue[this.counter];
+    }
+}
+
+// <<<<<< End of class declaration section <<<<<<
+
+
+
+// >>>>>> Main section >>>>>>
+
+let initialSpeed = 1;
+let speed = initialSpeed;
+
+const jewel = new Item();
+const letter = new Letter();
+
+const items = [jewel, letter];
+const allEnemies = [new Enemy(), new Enemy(), new Enemy(), new Enemy()];
+const boat = new Boat();
+const player = new Player();
+
+
+// This listens for key presses and sends the keys to Player.handleInput() method
+document.addEventListener('keyup', function(e) {
+    var allowedKeys = {
+        37: 'left',
+        38: 'up',
+        39: 'right',
+        40: 'down'
+    };
+
+    player.handleInput(allowedKeys[e.keyCode]);
+});
+
+// <<<<<< End of main section <<<<<<
