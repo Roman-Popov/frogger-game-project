@@ -104,6 +104,27 @@ let Engine = ( global => {
             numCols = 5;
         let row, col;
 
+        allEnemies.forEach(enemy => {
+            if (enemy.speedMult > 7 && player.stopGame === false) {
+                switch (enemy.y) {
+                    case 52:
+                        rowImages[1] = 'images/red-stone-block.png';
+                        break;
+                    case 135:
+                        rowImages[2] = 'images/red-stone-block.png'
+                        break;
+                    case 218:
+                        rowImages[3] = 'images/red-stone-block.png'
+                        break;
+                    case 301:
+                        rowImages[4] = 'images/red-stone-block.png'
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+
         // Before drawing, clear existing canvas
         ctx.clearRect(0,0,canvas.width,canvas.height)
 
@@ -157,6 +178,7 @@ let Engine = ( global => {
         'images/char-boy.png',
         'images/ghost.png',
         'images/stone-block.png',
+        'images/red-stone-block.png',
         'images/water-block.png',
         'images/grass-block.png',
         'images/bugs/brown-enemy-bug.png',
