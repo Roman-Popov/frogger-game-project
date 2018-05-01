@@ -49,7 +49,7 @@ class Enemy {
 
     // Draw the enemy on the screen, required method for game
     render() {
-
+        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     }
 }
 
@@ -186,7 +186,7 @@ class Player {
 
     // Draw the player on the screen, required method for game
     render() {
-
+        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     }
 }
 
@@ -235,7 +235,9 @@ class Boat {
 
     // Draw the boat on the screen, required method for game
     render() {
-
+        if (this.x != -150 || player.stopGame) {
+            ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+        }
     }
 }
 
@@ -274,7 +276,6 @@ class Item {
             this.taken = true;
             // Player takes the item, item becomes small
             this.sprite = this.sprite.replace('Gem ', 'Small Gem ');
-            console.log('taken')
         } else if (this.sprite && !this.taken) {
             // If item exists but player lost it. Item become normal-sized
             this.sprite = this.sprite.replace('Small ', '');
@@ -330,7 +331,9 @@ class Item {
 
     // Draw the item on the screen, required method for game
     render() {
-
+        if (this.presence && !player.stopGame) {
+            ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+        }
     }
 }
 
