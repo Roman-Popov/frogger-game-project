@@ -359,6 +359,32 @@ class Letter extends Item {
     }
 }
 
+
+
+class Heart extends Item {
+    constructor(options = {}) {
+        super();
+        this.availableSprites = ['images/Heart.png'];
+        this.availableValue = [0];
+        this.chance = options.chance || 0.005;
+        this.showTimeDelay = options.showTimeDelay || 20000;
+        this.multDelay = options.multDelay || 0.2;
+    }
+
+    isTakenItem() {
+        if (this.x === player.x && this.y === player.y) {
+            this.hideItem();
+            // In case if player has not enough lives - add one more
+            if (player.lives < 5) {
+                player.lives += 1;
+            // Else - add score points
+            } else {
+                player.score += 250 * speed;
+                console.log('score = ', player.score);
+            }
+        }
+    }
+}
 // <<<<<< End of class declaration section <<<<<<
 
 
@@ -370,8 +396,9 @@ let speed = initialSpeed;
 
 const jewel = new Item();
 const letter = new Letter();
+const heart = new Heart();
 
-const items = [jewel, letter];
+const items = [jewel, letter, heart];
 const allEnemies = [new Enemy(), new Enemy(), new Enemy(), new Enemy()];
 const boat = new Boat();
 const player = new Player();

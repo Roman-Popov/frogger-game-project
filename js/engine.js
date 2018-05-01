@@ -206,7 +206,8 @@ let Engine = ( global => {
         'images/gems/letters/Small Gem I.png',
         'images/gems/letters/Small Gem T.png',
         'images/gems/letters/Small Gem Y.png',
-        'images/Boat.png'
+        'images/Boat.png',
+        'images/Heart.png'
     ]);
     Resources.onReady(init);
 
