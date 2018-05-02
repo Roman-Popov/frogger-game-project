@@ -17,13 +17,14 @@ let Engine = ( global => {
      */
     const doc = global.document,
           win = global.window,
+          wrapper = doc.getElementById('canvas-wrapper');
           canvas = doc.createElement('canvas'),
           ctx = canvas.getContext('2d');
     let lastTime;
 
     canvas.width = 505;
-    canvas.height = 606;
-    doc.body.appendChild(canvas);
+    canvas.height = 586;
+    wrapper.appendChild(canvas);
 
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
@@ -79,6 +80,8 @@ let Engine = ( global => {
         allEnemies.forEach(enemy => enemy.update(dt));
         items.forEach(item => item.update());
         boat.update(dt);
+        lives.forEach(heart => heart.update());
+        collectedLetters.forEach(letter => letter.update());
         player.update();
     }
 
@@ -158,6 +161,8 @@ let Engine = ( global => {
          */
         allEnemies.forEach(enemy => enemy.render());
         boat.render();
+        lives.forEach(heart => heart.render());
+        collectedLetters.forEach(letter => letter.render());
         player.render();
         items.forEach(item => item.render());
     }
@@ -206,8 +211,18 @@ let Engine = ( global => {
         'images/gems/letters/Small Gem I.png',
         'images/gems/letters/Small Gem T.png',
         'images/gems/letters/Small Gem Y.png',
+        'images/gems/letters/Status-empty.png',
+        'images/gems/letters/Status-U.png',
+        'images/gems/letters/Status-D.png',
+        'images/gems/letters/Status-A.png',
+        'images/gems/letters/Status-C.png',
+        'images/gems/letters/Status-I.png',
+        'images/gems/letters/Status-T.png',
+        'images/gems/letters/Status-Y.png',
         'images/Boat.png',
-        'images/Heart.png'
+        'images/Heart.png',
+        'images/Heart-icon.png',
+        'images/Heart-icon-empty.png'
     ]);
     Resources.onReady(init);
 

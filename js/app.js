@@ -146,6 +146,7 @@ class Player {
             if (this.x > 540) {
                 if (letter.taken) {
                     this.updateSpeed();
+                    collectedLetters[letter.counter].available = true;
                     letter.counter += 1;
                 }
                 this.score += (50 + jewel.taken * jewel.value) * speed + letter.taken * letter.value;
@@ -169,6 +170,7 @@ class Player {
             jewel.taken = false;
             letter.taken = false;
             this.collision = false;
+            lives[this.lives - 1].available = false;
             this.lives -= 1;
 
             if (this.lives === 0) {
@@ -298,6 +300,7 @@ class Item {
         this.lastTime = this.now;
     }
 
+
     update() {
         if (player.stopGame) return; // Stop item updating if the game has been over
         this.now = Date.now();
@@ -353,6 +356,7 @@ class Letter extends Item {
         this.counter = 0;
     }
 
+
     chooseItem() {
         this.sprite = this.availableSprites[this.counter];
         this.value = this.availableValue[this.counter];
@@ -371,11 +375,13 @@ class Heart extends Item {
         this.multDelay = options.multDelay || 0.2;
     }
 
+
     isTakenItem() {
         if (this.x === player.x && this.y === player.y) {
             this.hideItem();
             // In case if player has not enough lives - add one more
             if (player.lives < 5) {
+                lives[player.lives].available = true;
                 player.lives += 1;
             // Else - add score points
             } else {
@@ -385,6 +391,84 @@ class Heart extends Item {
         }
     }
 }
+
+
+
+// Status-bar icons
+class Icon {
+    constructor(available) {
+        this.x = false;
+        this.y = 415;
+        this.sprite;
+        this.available = available;
+    }
+
+
+    setX() {
+        this.x = 0;
+    }
+
+
+    chooseSprite() {
+        return;
+    }
+
+
+    update() {
+        if (!this.x) this.setX();
+        this.sprite = this.chooseSprite();
+    }
+
+    // Draw the status-bar icon on the screen, required method for game
+    render() {
+        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    }
+}
+
+
+
+class HeartIcon extends Icon {
+    constructor(available) {
+        super(available)
+    }
+
+    // Choosing icon position according to the index number of this live in lives massive
+    setX() {
+        this.x = lives.indexOf(this) * 40;
+    }
+
+    // To synchronize player's number of lives with the status-bar
+    // Available lives are solid, unavailable are blank
+    chooseSprite() {
+        return this.available ? 'images/Heart-icon.png' : 'images/Heart-icon-empty.png';
+    }
+}
+
+
+
+class LetterIcon extends Icon {
+    constructor(available) {
+        super(available);
+        this.availableSprites = ['images/gems/letters/Status-U.png', 'images/gems/letters/Status-D.png',
+            'images/gems/letters/Status-A.png', 'images/gems/letters/Status-C.png',
+            'images/gems/letters/Status-I.png', 'images/gems/letters/Status-T.png',
+            'images/gems/letters/Status-Y.png'];
+    }
+
+    // Choosing icon position according to the index number
+    // of this letter in collectedLetters massive
+    setX() {
+        this.x = collectedLetters.indexOf(this) * 35 + 240;
+    }
+
+    // To synchronize player's collected letters with the status-bar
+    // Collected letters are solid, other are blank
+    chooseSprite() {
+        return this.available ? this.availableSprites[collectedLetters.indexOf(this)]
+            : 'images/gems/letters/Status-empty.png';
+    }
+}
+
 // <<<<<< End of class declaration section <<<<<<
 
 
@@ -402,6 +486,15 @@ const items = [jewel, letter, heart];
 const allEnemies = [new Enemy(), new Enemy(), new Enemy(), new Enemy()];
 const boat = new Boat();
 const player = new Player();
+
+// In the beginning tha player has 3 lives and the status-bar displays it ("true" HeartIcons)
+const lives = [new HeartIcon(true), new HeartIcon(true), new HeartIcon(true),
+               new HeartIcon(), new HeartIcon()];
+
+const collectedLetters = [];
+// Make as many letter icons as required to finish the game
+letter.availableSprites.forEach(() => collectedLetters.push(new LetterIcon()))
+
 
 
 // This listens for key presses and sends the keys to Player.handleInput() method
