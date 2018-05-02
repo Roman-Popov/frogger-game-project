@@ -187,8 +187,6 @@ let Engine = ( global => {
      * tick while the game isn't started.
      */
     function renderStartScreen() {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-        ctx.fillRect(0, 50, canvas.width, canvas.height);
         selector.render();
         availablePlayers.forEach(player => player.render());
     }

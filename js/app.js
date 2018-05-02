@@ -498,6 +498,7 @@ class Selector {
         this.y = 375;
         this.sprite = 'images/Selector.png';
         this.chosen = false;
+        this.bgOpacity = 0.5;
     }
 
 
@@ -505,8 +506,13 @@ class Selector {
         items.forEach(item => item.lastTime = Date.now());
         this.chosen = true;
         this.sprite = 'images/Selector-green.png';
+        const clearBg = setInterval(() => {
+            this.bgOpacity -= 0.05;
+            if (this.bgOpacity < 0.05) {clearInterval(clearBg); console.log('clear')}
+        }, 50)
         setTimeout(() => {
             player.startGame = true;
+            this.bgOpacity = 0.5;
         }, 500);
     }
 
@@ -538,6 +544,8 @@ class Selector {
 
     // Draw the selector on the screen, required method for game
     render() {
+        ctx.fillStyle = `rgba(0, 0, 0, ${this.bgOpacity})`;
+        ctx.fillRect(0, 50, canvas.width, canvas.height);
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     }
 }
