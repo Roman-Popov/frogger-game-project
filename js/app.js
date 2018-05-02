@@ -509,4 +509,34 @@ document.addEventListener('keyup', function(e) {
     player.handleInput(allowedKeys[e.keyCode]);
 });
 
+
+
+// For using touchscreen
+const gameField = document.getElementById('canvas-wrapper');
+let touchstartX;
+let touchstartY;
+
+gameField.addEventListener('touchstart', function (e) {
+    touchstartX = e.touches[0].pageX;
+    touchstartY = e.touches[0].pageY;
+});
+
+gameField.addEventListener('touchend', function (e) {
+
+    let moveX = touchstartX - e.changedTouches[0].pageX;
+    let moveY = touchstartY - e.changedTouches[0].pageY;
+    let result;
+
+    if (Math.abs(moveX) > Math.abs(moveY)) {
+        if (Math.abs(moveX) < 10) return false;
+        result = moveX > 0 ? 'left' : 'right';
+
+    } else {
+        if (Math.abs(moveY) < 10) return false;
+        result = moveY > 0 ? 'up' : 'down';
+
+    }
+    player.handleInput(result);
+});
+
 // <<<<<< End of main section <<<<<<
