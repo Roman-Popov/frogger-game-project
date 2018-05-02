@@ -70,7 +70,12 @@ let Engine = ( global => {
      * of the functions which may need to update entity's data.
      */
     function update(dt) {
-        updateEntities(dt);
+        if (player.startGame) {
+            updateEntities(dt);
+        }
+        else {
+            updateSelector();
+        }
     }
 
     /* This is called by the update function and loops through all of the
@@ -83,6 +88,13 @@ let Engine = ( global => {
         lives.forEach(heart => heart.update());
         collectedLetters.forEach(letter => letter.update());
         player.update();
+    }
+
+    /* This is called by the update function for updating the Selector
+     * at the beginning of the game
+     */
+    function updateSelector() {
+        selector.update();
     }
 
     /* This function initially draws the "game level", it will then call
@@ -148,7 +160,11 @@ let Engine = ( global => {
             }
         }
 
-        renderEntities();
+        if (player.startGame) {
+            renderEntities();
+        } else {
+            renderStartScreen();
+        }
     }
 
     /* This function is called by the render function and is called on each game
@@ -167,6 +183,16 @@ let Engine = ( global => {
         items.forEach(item => item.render());
     }
 
+    /* This function is called by the render function and is called on each game
+     * tick while the game isn't started.
+     */
+    function renderStartScreen() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+        ctx.fillRect(0, 50, canvas.width, canvas.height);
+        selector.render();
+        availablePlayers.forEach(player => player.render());
+    }
+
     /* This function does nothing but it could have been a good place to
      * handle game reset states - maybe a new game menu or a game over screen
      * those sorts of things. It's only called once by the init() method.
@@ -180,7 +206,13 @@ let Engine = ( global => {
      * all of these images are properly loaded our game will start.
      */
     Resources.load([
-        'images/char-boy.png',
+        'images/Selector.png',
+        'images/Selector-green.png',
+        'images/char-cat-girl.png',
+        'images/char-cap-boy.png',
+        'images/char-princess-girl.png',
+        'images/char-pink-girl.png',
+        'images/char-horn-boy.png',
         'images/ghost.png',
         'images/stone-block.png',
         'images/red-stone-block.png',

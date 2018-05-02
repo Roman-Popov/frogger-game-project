@@ -56,10 +56,10 @@ class Enemy {
 
 
 class Player {
-    constructor() {
+    constructor(character = 3) {
         this.availableX = [0, 101, 202, 303, 404];
         this.availableGear = [1, 2, 3, 3, 4, 4, 5];
-        this.x = 202;
+        this.x = character * 101;
         this.y = 384;
         this.lives = 3;
         this.score = 0;
@@ -68,7 +68,28 @@ class Player {
         this.aboard = false;
         this.movable = true;
         this.stopGame = false;
-        this.sprite = 'images/char-boy.png';
+        this.startGame = false;
+        switch (character) {
+            case 0:
+                this.sprite = 'images/char-cat-girl.png';
+                break;
+            case 1:
+                this.sprite = 'images/char-cap-boy.png';
+                break;
+            case 2:
+                this.sprite = 'images/char-princess-girl.png';
+                break;
+            case 3:
+                this.sprite = 'images/char-pink-girl.png';
+                break;
+            case 4:
+                this.sprite = 'images/char-horn-boy.png';
+                break;
+            default:
+                console.log('Something wrong with character choice. You will use default character');
+                this.sprite = 'images/char-princess-girl.png';
+                break;
+        }
     }
 
 
@@ -469,6 +490,58 @@ class LetterIcon extends Icon {
     }
 }
 
+
+
+class Selector {
+    constructor() {
+        this.x = 202;
+        this.y = 375;
+        this.sprite = 'images/Selector.png';
+        this.chosen = false;
+    }
+
+
+    letsBegin() {
+        items.forEach(item => item.lastTime = Date.now());
+        this.chosen = true;
+        this.sprite = 'images/Selector-green.png';
+        setTimeout(() => {
+            player.startGame = true;
+        }, 500);
+    }
+
+
+    handleInput(key) {
+        switch (key) {
+            case 'left':
+                if (this.x != 0 && !this.chosen) this.x -= 101;
+                break;
+            case 'right':
+                if (this.x != 404 && !this.chosen) this.x += 101;
+                break;
+            case 'spacebar':
+                this.letsBegin();
+                break;
+            default:
+                console.log('Wrong key! To move a selector use left and right arrow keys' +
+                            'or use spacebar / long-touch to select the character');
+                break;
+        }
+    }
+
+
+    update() {
+        player.sprite = availablePlayers[Math.round(this.x / 101)].sprite;
+        player.x = availablePlayers[Math.round(this.x / 101)].x;
+    }
+
+
+    // Draw the selector on the screen, required method for game
+    render() {
+        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    }
+}
+
 // <<<<<< End of class declaration section <<<<<<
 
 
@@ -477,6 +550,12 @@ class LetterIcon extends Icon {
 
 let initialSpeed = 1;
 let speed = initialSpeed;
+
+const selector = new Selector();
+const availablePlayers = [];
+for (let i = 0; i < 5; i++) {
+    availablePlayers.push(new Player(i));
+}
 
 const jewel = new Item();
 const letter = new Letter();
@@ -496,17 +575,23 @@ const collectedLetters = [];
 letter.availableSprites.forEach(() => collectedLetters.push(new LetterIcon()))
 
 
-
 // This listens for key presses and sends the keys to Player.handleInput() method
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
+        32: 'spacebar',
         37: 'left',
         38: 'up',
         39: 'right',
         40: 'down'
     };
 
-    player.handleInput(allowedKeys[e.keyCode]);
+    if (!e.repeat) {
+        if (!player.startGame) {
+            selector.handleInput(allowedKeys[e.keyCode]);
+        } else {
+            player.handleInput(allowedKeys[e.keyCode]);
+        }
+    }
 });
 
 
@@ -515,28 +600,43 @@ document.addEventListener('keyup', function(e) {
 const gameField = document.getElementById('canvas-wrapper');
 let touchstartX;
 let touchstartY;
+let touchstartTime;
+let selectTimer;
 
 gameField.addEventListener('touchstart', function (e) {
+    e.preventDefault();
     touchstartX = e.touches[0].pageX;
     touchstartY = e.touches[0].pageY;
+    touchstartTime = e.timeStamp;
+
+    // In case of long touch
+    if (!player.startGame) {
+        selectTimer = setTimeout(() => {
+                selector.handleInput('spacebar');
+        }, 600);
+    }
 });
 
 gameField.addEventListener('touchend', function (e) {
+
+    clearTimeout(selectTimer);
 
     let moveX = touchstartX - e.changedTouches[0].pageX;
     let moveY = touchstartY - e.changedTouches[0].pageY;
     let result;
 
-    if (Math.abs(moveX) > Math.abs(moveY)) {
-        if (Math.abs(moveX) < 10) return false;
+    if (Math.abs(moveX) > Math.abs(moveY) &&
+       (Math.abs(moveX) > 10 || Math.abs(moveY) > 10)) {
         result = moveX > 0 ? 'left' : 'right';
-
     } else {
-        if (Math.abs(moveY) < 10) return false;
         result = moveY > 0 ? 'up' : 'down';
-
     }
-    player.handleInput(result);
+
+    if (!player.startGame) {
+        selector.handleInput(result);
+    } else {
+        player.handleInput(result);
+    }
 });
 
 // <<<<<< End of main section <<<<<<
