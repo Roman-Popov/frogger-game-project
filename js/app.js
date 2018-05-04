@@ -188,6 +188,10 @@ class Player {
 
         // If player has collided with the enemy
         if (this.collision) {
+            gameField.classList.add('hurt');
+            setTimeout(() => {
+                gameField.classList.remove('hurt');
+            }, 50);
             jewel.taken = false;
             letter.taken = false;
             this.collision = false;
@@ -508,7 +512,7 @@ class Selector {
         this.sprite = 'images/Selector-green.png';
         const clearBg = setInterval(() => {
             this.bgOpacity -= 0.05;
-            if (this.bgOpacity < 0.05) {clearInterval(clearBg); console.log('clear')}
+            if (this.bgOpacity < 0.05) clearInterval(clearBg)
         }, 50)
         setTimeout(() => {
             player.startGame = true;
@@ -545,7 +549,7 @@ class Selector {
     // Draw the selector on the screen, required method for game
     render() {
         ctx.fillStyle = `rgba(0, 0, 0, ${this.bgOpacity})`;
-        ctx.fillRect(0, 50, canvas.width, canvas.height);
+        ctx.fillRect(0, 50, ctx.canvas.width, ctx.canvas.height);
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     }
 }
@@ -555,6 +559,12 @@ class Selector {
 
 
 // >>>>>> Main section >>>>>>
+
+let gameField = document.getElementById('canvas-wrapper');
+
+if (!gameField) {
+    gameField = document.body;
+}
 
 let initialSpeed = 1;
 let speed = initialSpeed;
@@ -605,7 +615,6 @@ document.addEventListener('keyup', function(e) {
 
 
 // For using touchscreen
-const gameField = document.getElementById('canvas-wrapper');
 let touchstartX;
 let touchstartY;
 let touchstartTime;

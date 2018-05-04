@@ -17,14 +17,13 @@ let Engine = ( global => {
      */
     const doc = global.document,
           win = global.window,
-          wrapper = doc.getElementById('canvas-wrapper');
           canvas = doc.createElement('canvas'),
           ctx = canvas.getContext('2d');
     let lastTime;
 
     canvas.width = 505;
     canvas.height = 586;
-    wrapper.appendChild(canvas);
+    gameField.appendChild(canvas);  // gameField is defined in app.js
 
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
