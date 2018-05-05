@@ -1,7 +1,7 @@
 
 body {
     text-align: center;
-    background: #cfffcf;
+    background: lightgray;
     min-height: 100vh;
     width: 100vw;
     margin: 0;
@@ -12,37 +12,175 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    font-family: 'Open Sans', sans-serif;
 }
 
 .main-header {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 100%;
+    font-family: 'Cinzel Decorative', cursive;
+    color: rgba(245, 245, 220);
+    text-shadow: black 0 0 0.25em,
+                     black 0 0 0.25em,
+                     black 0 0 0.25em,
+                     black 0 0 0.25em;
+}
 
+
+
+.site-logo {
+    position: absolute;
+    left: 5vw;
+    opacity: 0.65;
+    transition: opacity 1s;
+    outline: none;
+    max-height: 4em;
+}
+
+.site-logo:hover,
+.site-logo:focus {
+    opacity: 1;
+}
+
+.site-logo img {
+    max-height: 4em;
 }
 
 section {
     max-width: 90%;
-    margin: auto;
 }
 
-#canvas-wrapper {
-    margin: auto;
-    width: 505px;
-    max-width: 100%;
-    height: calc(90vw * 536 / 505);
-    max-height: 536px;
+
+
+/* CONTROL PANEL SECTION */
+
+#control-panel {
     position: relative;
-    box-shadow: none;
+    z-index: 2;
+    background: rgba(245, 245, 220, 0.5);
+    box-sizing: border-box;
+    width: 100%;
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 70px;
+    box-shadow: 0 0 1.5em 0.1em rgba(0, 0, 0, 0.5);
+    border: 2px solid #6d6477;
+}
+
+#control-panel > .btn {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: bold;
+    line-height: 1.3em;
+    position: absolute;
+    width: 80px;
+    height: 50px;
+    box-sizing: border-box;
+    background: rgba(238, 203, 163, 0.5);
+    border-radius: 20px;
+    border: 2px solid #6d6477;
+    outline: none;
+}
+
+.btn:focus {
+    box-shadow: 0 0 0.5em 0.2em #fef88e;
+}
+
+.btn:active {
+    box-shadow: inset 0 0 0.5em 0.2em #6d6477;
+    font-size: 80%;
+}
+
+#restart {
+    left: 20px;
+}
+
+#ratings {
+    right: 20px;
+}
+
+
+
+/* GAME FIELD SECTION */
+
+#canvas-wrapper {
+    margin-top: 7%;
+    width: 471px;
+    max-width: 100%;
+    height: calc(90vw * 500 / 471);
+    max-height: 500px;
+    position: relative;
+    border-radius: 5%;
+    box-shadow: 0 0 2.5em 0.2em black,
+                inset 0 0 2.5em 0.2em black;
     transition: box-shadow 1s ease-out;
 }
 
 #canvas-wrapper.hurt {
-    box-shadow: 0 0 2.5em 0.2em crimson,
+    box-shadow: 0 0 2.5em 0.7em crimson,
                 inset 0 0 2.5em 0.2em crimson;
     transition: 0s;
 }
 
 canvas {
-    position: relative;
+    position: absolute;
     max-width: 100%;
-    top: calc(-50 / 536 * 100%);
+    top: calc(-46 / 500 * 100%);
+    left: 0;
+}
+
+
+
+/* FOOTER SECTION */
+
+footer {
+    position: absolute;
+    bottom: 5px;
+    height: 2em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    color: white;
+}
+
+.footer-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-shadow: black 0 0 0.25em,
+                     black 0 0 0.25em,
+                     black 0 0 0.25em,
+                     black 0 0 0.25em;
+}
+
+.contacts {
+    position: absolute;
+    justify-content: space-between;
+    right: 3vw;
+    width: 12em;
+}
+
+.contacts a {
+    display: flex;
+    align-items: center;
+    border-radius: 50%;
+    box-shadow: 0 0 0.5em 0.05em black;
+    transition: box-shadow 0.5s;
+    outline: none;
+}
+
+.contacts a:hover,
+.contacts a:focus {
+    box-shadow: 0 0 0.5em 0.2em #fef88e,
+        inset 0 0 0.25em 0.1em #fef88e;
+}
+
+.contacts img {
+    max-height: 1.5em;
+    max-width: 1.5em;
 }

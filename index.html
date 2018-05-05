@@ -5,20 +5,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#ede2c7">
-    <meta name="description" content="Collect the Letters Game (Frogger-like) by Roman Popov RPDS">
-    <title>Frogger Game</title>
-    <link rel="icon" type="image/png" href="images/favicon.png" />
+    <meta name="description" content="Diamond Rush Game (Frogger-like) by Roman Popov RPDS">
+    <title>Diamond Rush Game</title>
+    <link rel="icon" type="image/png" href="images/icons/favicon.png" />
     <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Cinzel+Decorative:900|Open+Sans:400,700" rel="stylesheet">
 </head>
 
 <body>
     <header class="main-header">
-        <h1>Collect the Letters Game</h1>
+        <a class="site-logo" href="https://roman-popov.github.io/" title="Portfolio Page">
+            <img src="images/icons/LogoRPDS.png" alt="Logo">
+        </a>
+
+        <h1>Diamond Rush</h1>
     </header>
 
     <section>
+        <div id="control-panel">
+            <button class="btn" id="restart">Restart</button>
+
+            <div class="score">
+                <p>
+                    Your score: <br>
+                    <span id="current-score">0</span>
+                </p>
+            </div>
+
+            <button class="btn" id="ratings">Show ratings</button>
+        </div>
+
         <div id="canvas-wrapper"></div>
     </section>
+
+    <footer>
+        <div class="copyright footer-text">© 2018 Roman Popov All Rights Reserved.</div>
+
+        <div class="contacts footer-text">
+            <a href="https://github.com/Roman-Popov">
+                <img src="images/icons/github-icon.png" alt="GitHub" class="icon-cnt" title="GitHub">
+            </a>
+            <a href="https://t.me/Barmalew">
+                <img src="images/icons/telegram-icon.png" alt="Telegram" class="icon-cnt" title="Telegram">
+            </a>
+            <a href="https://vk.com/vk.popovroman">
+                <img src="images/icons/vk-icon.png" alt="Vkontakte" class="icon-cnt" title="Vkontakte">
+            </a>
+            <a href="mailto:popov.r.k.18@gmail.com">
+                <img src="images/icons/email-icon.png" alt="Gmail" class="icon-cnt" title="Gmail: popov.r.k.18@gmail.com">
+            </a>
+            <a href="https://discussions.udacity.com/u/RomanPopov/">
+                <img src="images/icons/udacity-icon.png" alt="Udacity" class="icon-cnt" title="Udacity">
+            </a>
+        </div>
+    </footer>
 
     <script src="js/resources.js"></script>
     <script src="js/app.js"></script>
