@@ -560,12 +560,6 @@ class Selector {
 
 // >>>>>> Main section >>>>>>
 
-let gameField = document.getElementById('canvas-wrapper');
-
-if (!gameField) {
-    gameField = document.body;
-}
-
 let initialSpeed = 1;
 let speed = initialSpeed;
 
@@ -594,9 +588,9 @@ letter.availableSprites.forEach(() => collectedLetters.push(new LetterIcon()))
 
 
 // This listens for key presses and sends the keys to Player.handleInput() method
-document.addEventListener('keyup', function(e) {
-    var allowedKeys = {
-        32: 'spacebar',
+document.addEventListener('keyup', e => {
+    let allowedKeys = {
+        32: e.ctrlKey ? 'spacebar' : false,
         37: 'left',
         38: 'up',
         39: 'right',
@@ -614,13 +608,28 @@ document.addEventListener('keyup', function(e) {
 
 
 
+
+const buttons = document.getElementsByClassName('btn');
+let gameField = document.getElementById('canvas-wrapper') || document.body;
+
+
+for (let button of buttons) {
+    button.addEventListener('click', e => {
+        // If button was pressed via mouse click
+        if (e.x != 0) {
+            button.blur();
+        }
+    })
+}
+
+
 // For using touchscreen
 let touchstartX;
 let touchstartY;
 let touchstartTime;
 let selectTimer;
 
-gameField.addEventListener('touchstart', function (e) {
+gameField.addEventListener('touchstart', e => {
     e.preventDefault();
     touchstartX = e.touches[0].pageX;
     touchstartY = e.touches[0].pageY;
@@ -634,7 +643,7 @@ gameField.addEventListener('touchstart', function (e) {
     }
 });
 
-gameField.addEventListener('touchend', function (e) {
+gameField.addEventListener('touchend', e => {
 
     clearTimeout(selectTimer);
 
