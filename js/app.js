@@ -166,18 +166,14 @@ class Player {
             // If the player swam away
             if (this.x > 540) {
                 if (letter.taken) {
+                    allEnemies.push(new Enemy());
                     this.updateSpeed();
-                    collectedLetters[letter.counter].available = true;
+                    // collectedLetters[letter.counter].available = true;
                     letter.counter += 1;
                 }
                 this.score += (50 + jewel.taken * jewel.value) * speed + letter.taken * letter.value;
 
-                // Adding new enemy if the letter was collected
-                if (letter.taken) {
-                    letter.taken = false;
-                    allEnemies.push(new Enemy());
-                }
-
+                letter.taken = false;
                 jewel.taken = false;
                 this.x = 404;
                 this.y = 384;
@@ -196,7 +192,6 @@ class Player {
             jewel.taken = false;
             letter.taken = false;
             this.collision = false;
-            lives[this.lives - 1].available = false;
             this.lives -= 1;
 
             if (this.lives === 0) {
@@ -407,11 +402,11 @@ class Heart extends Item {
             this.hideItem();
             // In case if player has not enough lives - add one more
             if (player.lives < 5) {
-                lives[player.lives].available = true;
                 player.lives += 1;
             // Else - add score points
             } else {
                 player.score += 250 * speed;
+                displayedScore.textContent = player.score;
                 console.log('score = ', player.score);
             }
         }
@@ -422,11 +417,10 @@ class Heart extends Item {
 
 // Status-bar icons
 class Icon {
-    constructor(available) {
+    constructor() {
         this.x = false;
         this.y = 415;
         this.sprite;
-        this.available = available;
     }
 
 
@@ -454,8 +448,8 @@ class Icon {
 
 
 class HeartIcon extends Icon {
-    constructor(available) {
-        super(available)
+    constructor() {
+        super()
     }
 
     // Choosing icon position according to the index number of this live in lives massive
@@ -466,15 +460,15 @@ class HeartIcon extends Icon {
     // To synchronize player's number of lives with the status-bar
     // Available lives are solid, unavailable are blank
     chooseSprite() {
-        return this.available ? 'images/Heart-icon.png' : 'images/Heart-icon-empty.png';
+        return lives.indexOf(this) < player.lives ? 'images/Heart-icon.png' : 'images/Heart-icon-empty.png';
     }
 }
 
 
 
 class LetterIcon extends Icon {
-    constructor(available) {
-        super(available);
+    constructor() {
+        super();
         this.availableSprites = ['images/gems/letters/Status-U.png', 'images/gems/letters/Status-D.png',
             'images/gems/letters/Status-A.png', 'images/gems/letters/Status-C.png',
             'images/gems/letters/Status-I.png', 'images/gems/letters/Status-T.png',
@@ -490,8 +484,9 @@ class LetterIcon extends Icon {
     // To synchronize player's collected letters with the status-bar
     // Collected letters are solid, other are blank
     chooseSprite() {
-        return this.available ? this.availableSprites[collectedLetters.indexOf(this)]
-            : 'images/gems/letters/Status-empty.png';
+        return collectedLetters.indexOf(this) < letter.counter ?
+            this.availableSprites[collectedLetters.indexOf(this)] :
+            'images/gems/letters/Status-empty.png';
     }
 }
 
@@ -517,6 +512,8 @@ class Selector {
         }, 50)
         setTimeout(() => {
             player.startGame = true;
+            this.chosen = false;
+            this.sprite = 'images/Selector.png';
             this.bgOpacity = 0.5;
         }, 500);
     }
