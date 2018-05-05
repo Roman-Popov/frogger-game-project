@@ -198,7 +198,6 @@ class Player {
                 console.log('Game over')
                 this.sprite = 'images/ghost.png';   // Player become a ghost
                 this.gameOver();
-                this.stopGame = true;
             } else {
                 this.x = 202;
                 this.y = 384;
@@ -503,7 +502,6 @@ class Selector {
 
 
     letsBegin() {
-        items.forEach(item => item.lastTime = Date.now());
         this.chosen = true;
         this.sprite = 'images/Selector-green.png';
         const clearBg = setInterval(() => {
@@ -512,6 +510,8 @@ class Selector {
         }, 50)
         setTimeout(() => {
             player.startGame = true;
+            player.updateSpeed();
+            items.forEach(item => item.lastTime = Date.now())
             this.chosen = false;
             this.sprite = 'images/Selector.png';
             this.bgOpacity = 0.5;
@@ -558,6 +558,8 @@ class Selector {
 
 // >>>>>> Main section >>>>>>
 
+   // >>> Game subsection >>>
+
 let initialSpeed = 1;
 let speed = initialSpeed;
 
@@ -572,7 +574,7 @@ const letter = new Letter();
 const heart = new Heart();
 
 const items = [jewel, letter, heart];
-const allEnemies = [new Enemy(), new Enemy(), new Enemy(), new Enemy()];
+let allEnemies = [new Enemy(), new Enemy(), new Enemy(), new Enemy()];
 const boat = new Boat();
 const player = new Player();
 
@@ -604,13 +606,32 @@ document.addEventListener('keyup', e => {
     }
 });
 
+   // <<< End of game subsection <<<
 
 
+   // >>> Page section >>>
 
 const buttons = document.getElementsByClassName('btn');
+const btnRestart = document.getElementById('restart');
 const displayedScore = document.getElementById('current-score') || document.createElement('span');
 let gameField = document.getElementById('canvas-wrapper') || document.body;
 
+
+function restart () {
+    player.stopGame = false;
+    player.startGame = false;
+    player.lives = 3;
+    player.score = 0;
+    player.movable = true;
+    player.y = 384;
+    displayedScore.textContent = 0;
+    jewel.taken = false;
+    letter.taken = false;
+    letter.counter = 0;
+    boat.x = 550;
+    allEnemies = [new Enemy(), new Enemy(), new Enemy(), new Enemy()];
+    items.forEach(item => item.presence = false);
+}
 
 for (let button of buttons) {
     button.addEventListener('click', e => {
@@ -620,6 +641,10 @@ for (let button of buttons) {
         }
     })
 }
+
+btnRestart.addEventListener('click', () => {
+    restart();
+})
 
 
 // For using touchscreen
@@ -663,5 +688,7 @@ gameField.addEventListener('touchend', e => {
         player.handleInput(result);
     }
 });
+
+   // <<< End of page subsection <<<
 
 // <<<<<< End of main section <<<<<<
