@@ -183,6 +183,7 @@ class Player {
                 this.y = 384;
                 this.aboard = false;
                 console.log(`Your score: ${this.score}`);
+                displayedScore.textContent = this.score;
             }
         }
 
@@ -534,7 +535,7 @@ class Selector {
                 break;
             default:
                 console.log('Wrong key! To move a selector use left and right arrow keys' +
-                            'or use spacebar / long-touch to select the character');
+                            'or use ctrl + spacebar / long-touch to select the character');
                 break;
         }
     }
@@ -610,6 +611,7 @@ document.addEventListener('keyup', e => {
 
 
 const buttons = document.getElementsByClassName('btn');
+const displayedScore = document.getElementById('current-score') || document.createElement('span');
 let gameField = document.getElementById('canvas-wrapper') || document.body;
 
 
