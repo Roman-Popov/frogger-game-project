@@ -23,7 +23,7 @@ let Engine = ( global => {
 
     canvas.width = 505;
     canvas.height = 586;
-    gameField.appendChild(canvas);  // gameField is defined in app.js
+    gameField.insertBefore(canvas, gameField.firstChild);  // gameField is defined in app.js
 
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
@@ -188,7 +188,6 @@ let Engine = ( global => {
         selector.render();
         availablePlayers.forEach(player => player.render());
     }
-
 
     /* Load all of the images we know we're going to need to
      * draw the game level. Then set init as the callback method, so that when

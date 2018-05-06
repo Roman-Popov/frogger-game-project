@@ -122,7 +122,7 @@ class Player {
                     if (this.x != 404 && !this.aboard) this.x += 101;
                     break;
                 default:
-                    console.log('Wrong key! To move your character use arrow keys.')
+                    console.log('Wrong key! To move your character use arrow keys or swipe.')
                     break;
             }
         }
@@ -138,6 +138,19 @@ class Player {
         this.movable = false;
         this.stopGame = true;
         speed = 3;
+
+        setTimeout(() => {
+            popUpHeader.textContent = this.lives > 0 ? 'Congratulations!' : 'Game over!';
+            resultMessage.textContent = this.lives > 0 ? 'You have won!' : 'You are dead.';
+            resultLetters.textContent = letter.counter;
+            resultSpeed.textContent = initialSpeed * 100 + '%';
+            resultScore.textContent = player.score;
+            popUpWindow.classList.remove('hidden');
+            controlAvailable = false;
+            setTimeout(() => {
+                nameField.focus();
+            }, 50);
+        }, 3000);
 
         // Enemy invasion :D
         for (let i = 0; i < 30; i++) {
@@ -531,8 +544,8 @@ class Selector {
                 this.letsBegin();
                 break;
             default:
-                console.log('Wrong key! To move a selector use left and right arrow keys' +
-                            'or use ctrl + spacebar / long-touch to select the character');
+                console.log('Wrong key! To move a selector use left and right swipe / arrow keys ' +
+                            'or use long-touch / ctrl + spacebar to select the character');
                 break;
         }
     }
@@ -559,6 +572,8 @@ class Selector {
 // >>>>>> Main section >>>>>>
 
    // >>> Game subsection >>>
+
+let controlAvailable = true;
 
 let initialSpeed = 1;
 let speed = initialSpeed;
@@ -597,7 +612,7 @@ document.addEventListener('keyup', e => {
         40: 'down'
     };
 
-    if (!e.repeat) {
+    if (!e.repeat && controlAvailable) {
         if (!player.startGame) {
             selector.handleInput(allowedKeys[e.keyCode]);
         } else {
@@ -612,12 +627,109 @@ document.addEventListener('keyup', e => {
    // >>> Page section >>>
 
 const buttons = document.getElementsByClassName('btn');
-const btnRestart = document.getElementById('restart');
+const btnRestart = document.getElementById('restart') || document.createElement('button');
+const btnRatings = document.getElementById('ratings') || document.createElement('button');
+const btnClosePopUp = document.querySelector('.results>#btn-close') || document.createElement('button');
+const btnSubmit = document.querySelector('.results #btn-submit') || document.createElement('button');
 const displayedScore = document.getElementById('current-score') || document.createElement('span');
-let gameField = document.getElementById('canvas-wrapper') || document.body;
+const gameField = document.getElementById('canvas-wrapper') || document.body;
+const leaderboard = document.querySelector('.leaderboard') || document.createElement('div');
+const leaderTable = document.getElementById('leaderboard-body') || document.createElement('tbody');
+const popUpWindow = document.querySelector('.pop-up') || document.createElement('section');
+const popUpHeader = document.querySelector('.pop-up-header') || document.createElement('h2');
+const resultMessage = document.getElementById('fin-message') || document.createElement('p');
+const resultLetters = document.getElementById('fin-letters') || document.createElement('span');
+const resultSpeed = document.getElementById('fin-speed') || document.createElement('span');
+const resultScore = document.getElementById('fin-score') || document.createElement('span');
+const nameField = document.getElementById('input-name');
+const nameForm = document.querySelector('.print-your-name');
 
 
-function restart () {
+function slideToggle(obj, callback = () => {}, height) {
+    callback();
+    if (obj.offsetHeight) {
+        obj.style.height = '0px';
+    } else {
+        obj.style.height = height || '100%';
+    };
+}
+
+
+function toggleLeaderboard() {
+    slideToggle(leaderboard, () => {
+        leaderboard.style.overflow = 'hidden';
+        if (leaderboard.offsetHeight > 0) {
+            btnRatings.textContent = 'Show ratings';
+            controlAvailable = true;
+        } else {
+            btnRatings.textContent = 'Hide ratings';
+            if (leaderboard.offsetLeft === 0) controlAvailable = false;
+        };
+        setTimeout(() => {
+            leaderboard.style.overflow = '';
+        }, 500);
+    });
+}
+
+
+function compareScore(personA, personB) {
+    return personB.score - personA.score;
+}
+
+
+function initLeaderTable() {
+    const Ann = {name: 'Ann Dawson', speed: '150%', score: 7825},
+          John = {name: 'John Smith', speed: '100%', score: 7400},
+          Michael = {name: 'Michael Reed', speed: '200%', score: 3700};
+    const initialPersons = [Ann, John, Michael];
+    if (!localStorage.getItem('initLeaderTable')) {
+        initialPersons.forEach(person => updateLeaderTable(person));
+        localStorage.setItem('initLeaderTable', 'true');
+    } else {
+        updateLeaderTable();
+    };
+}
+
+
+function updateLeaderTable(newPerson) {
+    let updatedTable = '';
+    let localRatings = JSON.parse(localStorage.getItem('leaderboard')) || [];
+    if (newPerson) localRatings.push(newPerson);
+    localRatings.sort(compareScore);
+    localRatings.forEach((elem, pos) => {
+        updatedTable += '<tr class="data">' +
+                            `<td class="lb-pos">${pos + 1}</td>` +
+                            `<td class="lb-name">${elem.name}</td>` +
+                            `<td class="lb-speed">${elem.speed}</td>` +
+                            `<td class="lb-score">${elem.score}</td>` +
+                        '</tr>';
+    });
+    leaderTable.innerHTML = updatedTable;
+    try {
+        localStorage.setItem('leaderboard', JSON.stringify(localRatings));
+    } catch (e) {
+        if (e == QUOTA_EXCEEDED_ERR) {
+            alert('Local Storage quota exceeded :( \n\nLeaderboard will be overwriten now');
+            localStorage.clear();
+            initLeaderTable();
+            localRatings = [];
+            if (newPerson) localRatings.push(newPerson);
+            localStorage.setItem('leaderboard', JSON.stringify(localRatings));
+        };
+    };
+}
+
+
+function closeConfirm() {
+    if (confirm("Do you really want to close this window and not add your name to the leaderboard?")) {
+        popUpWindow.classList.add('hidden');
+    } else {
+        return;
+    };
+}
+
+
+function restart() {
     player.stopGame = false;
     player.startGame = false;
     player.lives = 3;
@@ -631,20 +743,71 @@ function restart () {
     boat.x = 550;
     allEnemies = [new Enemy(), new Enemy(), new Enemy(), new Enemy()];
     items.forEach(item => item.presence = false);
+    if (leaderboard.offsetHeight != 0) toggleLeaderboard();
+    controlAvailable = true;
 }
+
+
+
+initLeaderTable();
 
 for (let button of buttons) {
     button.addEventListener('click', e => {
         // If button was pressed via mouse click
         if (e.x != 0) {
             button.blur();
-        }
-    })
-}
+        };
+    });
+};
 
 btnRestart.addEventListener('click', () => {
     restart();
-})
+});
+
+btnRatings.addEventListener('click', () => {
+    toggleLeaderboard();
+});
+
+btnClosePopUp.addEventListener('click', () => {
+    closeConfirm();
+});
+
+popUpWindow.addEventListener('keydown', e => {
+    // Check for TAB keypress
+    if (e.keyCode === 9) {
+        // SHIFT + TAB
+        if (e.shiftKey) {
+            if (btnClosePopUp === document.activeElement) {
+                e.preventDefault();
+                btnSubmit.focus();
+            };
+        // TAB
+        } else {
+            if (btnSubmit === document.activeElement) {
+                e.preventDefault();
+                btnClosePopUp.focus();
+            };
+        };
+    };
+
+    // Check for ESC keypress
+    if (e.keyCode === 27) {
+        closeConfirm();
+    };
+});
+
+
+nameForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const currentRating = {
+        name: nameField.value || 'No Name',
+        speed: initialSpeed * 100 + '%',
+        score: player.score
+    };
+    updateLeaderTable(currentRating);
+    popUpWindow.classList.add('hidden');
+    if (leaderboard.offsetHeight === 0) toggleLeaderboard();
+});
 
 
 // For using touchscreen
@@ -664,7 +827,7 @@ gameField.addEventListener('touchstart', e => {
         selectTimer = setTimeout(() => {
                 selector.handleInput('spacebar');
         }, 600);
-    }
+    };
 });
 
 gameField.addEventListener('touchend', e => {
@@ -680,13 +843,13 @@ gameField.addEventListener('touchend', e => {
         result = moveX > 0 ? 'left' : 'right';
     } else {
         result = moveY > 0 ? 'up' : 'down';
-    }
+    };
 
-    if (!player.startGame) {
+    if (!player.startGame && controlAvailable) {
         selector.handleInput(result);
     } else {
         player.handleInput(result);
-    }
+    };
 });
 
    // <<< End of page subsection <<<

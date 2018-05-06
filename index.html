@@ -35,7 +35,52 @@
             <button class="btn" id="ratings">Show ratings</button>
         </div>
 
-        <div id="canvas-wrapper"></div>
+        <div id="canvas-wrapper">
+            <div class="leaderboard">
+                <h2>Leaderboard</h2>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>
+                                <span title="Position">#</span>
+                            </th>
+                            <th>
+                                <span title="Name">Name</span>
+                            </th>
+                            <th>
+                                <span title="Initial speed">Speed</span>
+                            </th>
+                            <th>
+                                <span title="Score">Score</span>
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="leaderboard-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="pop-up hidden">
+            <div class="results">
+                <button class="close-icon btn" id="btn-close">
+                    <i></i>
+                    <i></i>
+                </button>
+
+                <h2><span class="pop-up-header">Congratulations!</span></h2>
+
+                <p id="fin-message"></p>
+                <p>You have collected <span id="fin-letters">0</span> letters at <span id="fin-speed">100%</span> speed.</p>
+                <p>Your score is <span id="fin-score">000</span>.</p>
+
+                <form class="print-your-name">
+                    <input id="input-name" type="text" placeholder="Enter your name here">
+                    <input type="submit" id="btn-submit" class="btn" value="Submit!">
+                </form>
+            </div>
     </section>
 
     <footer>
