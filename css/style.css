@@ -29,6 +29,10 @@ body {
                      black 0 0 0.25em;
 }
 
+.main-header h1 {
+    cursor: default;
+}
+
 .site-logo {
     position: absolute;
     left: 5vw;
@@ -137,13 +141,12 @@ canvas {
 
 
 
-/* LEADERBOARD SECTION */
+/* SLIDE SECTION */
 
-.leaderboard {
+.slide {
     position: absolute;
     background: rgba(245, 236, 220, 0.9);
     width: 100%;
-    height: 0;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -151,15 +154,23 @@ canvas {
     padding: 0 5%;
     transition: height 0.5s ease-in-out;
     box-shadow: inset 0 0 0 2px #6d6477;
-
-    /* padding: 0 3%;
-    border-radius: 20px;
-    width: 70%;
-    right: -75%; */
 }
 
-.leaderboard h2 {
+.slide h2 {
     background: linear-gradient(90deg, transparent, rgb(238, 203, 163), transparent);
+}
+
+
+
+/* LEADERBOARD SECTION */
+
+.leaderboard {
+    height: 0;
+    padding: 0 3%;
+    border-radius: 20px;
+    width: 70%;
+    right: -75%;
+    z-index: 5;
 }
 
 .leaderboard table {
@@ -184,6 +195,72 @@ canvas {
 .leaderboard tr td:last-child {
     border-left: none;
     border-right: none;
+}
+
+
+
+/* HELP SECTION */
+
+.help {
+    height: 100%;
+    padding: 0 2.2em 0 1em;
+    border-radius: 20px;
+    width: 70%;
+    left: -75%;
+    direction: rtl;
+}
+
+.help p {
+    text-align: justify;
+    text-indent: 1.5em;
+    direction: ltr;
+}
+
+.wrapper-help {
+    position: relative;
+}
+
+.wrapper-btn-close {
+    position: absolute;
+    height: 100%;
+    right: -1.8em;
+    top: -4em;
+}
+
+#btn-close-help {
+    position: sticky;
+}
+
+.help a {
+    transition: all 0.5s ease-out;
+    border-bottom: 1px dashed black;
+    text-decoration: none;
+    color: black
+}
+
+.help a:hover {
+    color: red;
+    border-bottom: 1px solid red;
+}
+
+.help ul,
+.help ol {
+    text-align: justify;
+    direction: ltr;
+}
+
+.help li {
+    margin-bottom: 0.4em;
+}
+
+.help ul li:last-of-type,
+.help ol:last-of-type {
+    margin-bottom: 1.5em;
+}
+
+.open-help-hint {
+    display: inline-block;
+    margin: 2em 0;
 }
 
 

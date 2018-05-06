@@ -36,7 +36,98 @@
         </div>
 
         <div id="canvas-wrapper">
-            <div class="leaderboard">
+            <div class="slide help">
+                <h2>Instructions</h2>
+
+                <div class="wrapper-help">
+                    <div class="wrapper-btn-close">
+                        <button class="close-icon btn" id="btn-close-help">
+                            <i></i>
+                            <i></i>
+                        </button>
+                    </div>
+
+                    <h3>Table of contents</h3>
+                    <ol>
+                        <li><a href="#game-rules">Game rules</a></li>
+                        <li><a href="#keyboard-controls">Keyboard controls</a></li>
+                        <li><a href="#touchscreen-controls">Touchscreen controls</a></li>
+                    </ol>
+
+                    <a id="game-rules"></a>
+                    <h3>Game rules</h3>
+                    <p>
+                        The main goal of the game is to compose a word from Letter-gems.
+                        To collect a gem Player should:
+                    </p>
+                    <ol>
+                        <li>Pick gem by moving to the same cell where it is located</li>
+                        <li>Deliver gem to the boat</li>
+                        <li>Swim away on a boat by staying aboard until the end of the game field</li>
+                    </ol>
+                    <p>
+                        After Player has swum away, he returns to the starting position in the safe zone and
+                        he is able to continue hunting the gems.
+                    </p>
+                    <p>
+                        Sometimes there appears additional ordinary gems. If Player collect them,
+                        he will receive additional points to the score. By the way: even if Player
+                        has swum away on a boat empty-handed he still receive additional points.
+                    </p>
+
+                    <p>
+                        The difficult with this collecting process is that there are lots of enemy beetles.
+                        They interfere Player with crossing the game field. In addition every time Player
+                        collects a Letter-gem, the game speed increases and an additional beetle appears.
+                        If a beetle hits Player, then Player loses his life.
+                    </p>
+                    <p>
+                        At the beginning Player has 3 lives. Player can increase lives amount by collecting
+                        Heart-gems. The lives limit is 5. If Player already has 5 lives and collect more
+                        Heart-gems, he will receive additional points to the score.
+                    </p>
+                    <p>
+                        The game ends when all the letters are collected or Player has no more lives.
+                        You can see current progress (lives and letters) at the bottom of the game field.
+                    </p>
+                    <p>
+                        After the game is over, Player will be asked to enter his name to the Leaderboard.
+                        You can see the the Leaderboard by pressing the "Show ratings" button at any time.
+                        Also, Player can restart the game by pressing the "Restart" button at any time.
+                    </p>
+
+                    <a id="keyboard-controls"></a>
+                    <h3>Keyboard controls</h3>
+                    <h4>Initial screen</h4>
+                    <ul>
+                        <li>Move selector: use left or right arrow keys</li>
+                        <li>Choose game speed: up or down arrow keys</li>
+                        <li>Choose player: clrt + space</li>
+                    </ul>
+
+                    <h4>Game screen</h4>
+                    <ul>
+                        <li>Move player: arrow keys</li>
+                    </ul>
+
+                    <a id="touchscreen-controls"></a>
+                    <h3>Touchscreen controls</h3>
+                    <h4>Initial screen</h4>
+                    <ul>
+                        <li>Move selector: use left or right swipe</li>
+                        <li>Choose game speed: up or down swipe</li>
+                        <li>Choose player: long touch</li>
+                    </ul>
+
+                    <h4>Game screen</h4>
+                    <ul>
+                        <li>Move player: left, right, up, down swipe</li>
+                    </ul>
+
+                    <span class="open-help-hint">To open this instructions again just click the <i>«Diamond Rush»</i> title</span>
+                </div>
+            </div>
+            <div class="slide leaderboard">
                 <h2>Leaderboard</h2>
 
                 <table>
@@ -65,7 +156,7 @@
 
     <section class="pop-up hidden">
             <div class="results">
-                <button class="close-icon btn" id="btn-close">
+                <button class="close-icon btn" id="btn-close-popup">
                     <i></i>
                     <i></i>
                 </button>

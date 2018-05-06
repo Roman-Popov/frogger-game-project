@@ -94,7 +94,7 @@ class Player {
 
 
     goAshore() {
-        if (this.x > 450) return;  // Too late to go ashore
+        if (this.x > 450 || this.x < 0) return;  // Too late to go ashore
         this.y = 52;
         this.x = this.availableX[Math.round(this.x / 505 * 5)];
     }
@@ -629,8 +629,11 @@ document.addEventListener('keyup', e => {
 const buttons = document.getElementsByClassName('btn');
 const btnRestart = document.getElementById('restart') || document.createElement('button');
 const btnRatings = document.getElementById('ratings') || document.createElement('button');
-const btnClosePopUp = document.querySelector('.results>#btn-close') || document.createElement('button');
+const btnClosePopUp = document.querySelector('.results>#btn-close-popup') || document.createElement('button');
+const btnCloseHelp = document.querySelector('.help #btn-close-help') || document.createElement('button');
+const btnSecretHeader = document.querySelector('h1') || document.createElement('h1');
 const btnSubmit = document.querySelector('.results #btn-submit') || document.createElement('button');
+const helpWindow = document.querySelector('.slide.help') || document.createElement('div');
 const displayedScore = document.getElementById('current-score') || document.createElement('span');
 const gameField = document.getElementById('canvas-wrapper') || document.body;
 const leaderboard = document.querySelector('.leaderboard') || document.createElement('div');
@@ -652,6 +655,23 @@ function slideToggle(obj, callback = () => {}, height) {
     } else {
         obj.style.height = height || '100%';
     };
+}
+
+
+function toggleHelp() {
+    slideToggle(helpWindow, () => {
+        if (helpWindow.offsetHeight > 0) {
+            controlAvailable = true;
+            btnCloseHelp.classList.add('hidden');
+            btnSecretHeader.style.cursor = 'pointer';
+            btnSecretHeader.title = 'Show game instructions';
+        } else {
+            if (helpWindow.offsetLeft === 0) controlAvailable = false;
+        };
+        setTimeout(() => {
+            btnCloseHelp.classList.remove('hidden');
+        }, 500);
+    });
 }
 
 
@@ -749,6 +769,8 @@ function restart() {
 
 
 
+controlAvailable = helpWindow.offsetLeft === 0 ? false : true;
+
 initLeaderTable();
 
 for (let button of buttons) {
@@ -766,6 +788,18 @@ btnRestart.addEventListener('click', () => {
 
 btnRatings.addEventListener('click', () => {
     toggleLeaderboard();
+});
+
+btnCloseHelp.addEventListener('click', () => {
+    toggleHelp();
+});
+
+btnSecretHeader.addEventListener('click', () => {
+    if (helpWindow.offsetHeight === 0) {
+        toggleHelp();
+        btnSecretHeader.style.cursor = '';
+        btnSecretHeader.title = '';
+    }
 });
 
 btnClosePopUp.addEventListener('click', () => {
@@ -817,13 +851,14 @@ let touchstartTime;
 let selectTimer;
 
 gameField.addEventListener('touchstart', e => {
-    e.preventDefault();
+    if (controlAvailable) e.preventDefault();
+
     touchstartX = e.touches[0].pageX;
     touchstartY = e.touches[0].pageY;
     touchstartTime = e.timeStamp;
 
     // In case of long touch
-    if (!player.startGame) {
+    if (!player.startGame && controlAvailable) {
         selectTimer = setTimeout(() => {
                 selector.handleInput('spacebar');
         }, 600);
