@@ -440,7 +440,7 @@ footer {
     position: fixed;
     width: 500px;
     max-width: 90vw;
-    background: rgba(245, 236, 220);
+    background: rgb(245, 236, 220);
     box-shadow: inset 0 0 0.5em 0.2em #6d6477,
                 0 0 0.5em 0.2em rgba(245, 236, 220, 0.9);
     border-radius: 30px;
@@ -453,7 +453,7 @@ footer {
 .pop-up-header {
     display: inline-block;
     font-size: 1.5em;
-    box-shadow: 0 -1px 0 0.2em rgba(245, 236, 220),
+    box-shadow: 0 -1px 0 0.2em rgb(245, 236, 220),
                 0 0.2em 0.2em 0 #6d6477;
     margin-bottom: 0.5em;
 }
