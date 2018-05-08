@@ -142,7 +142,7 @@ class Player {
             popUpHeader.textContent = this.lives > 0 ? 'Congratulations!' : 'Game over!';
             resultMessage.textContent = this.lives > 0 ? 'You have won!' : 'You are dead.';
             resultLetters.textContent = letter.counter;
-            resultSpeed.textContent = initialSpeed * 100 + '%';
+            resultSpeed.textContent = Math.round(initialSpeed * 100) + '%';
             resultScore.textContent = player.score;
             popUpWindow.classList.remove('hidden');
             controlAvailable = false;
@@ -682,6 +682,7 @@ function toggleHelp() {
         if (helpWindow.offsetHeight > 0) {
             controlAvailable = true;
             btnCloseHelp.classList.add('hidden');
+            if (!player.startGame) speedWindow.classList.remove('hidden');
             btnSecretHeader.style.cursor = 'pointer';
             btnSecretHeader.title = 'Show game instructions';
         } else {
@@ -701,14 +702,15 @@ function toggleLeaderboard() {
     slideToggle(leaderboard, () => {
         leaderboard.style.overflow = 'hidden';
         if (leaderboard.offsetHeight > 0) {
-            btnRatings.textContent = 'Show ratings';
+            btnRatings.innerHTML = 'Show <br> ratings';
             controlAvailable = true;
+            if (!player.startGame) speedWindow.classList.remove('hidden');
         } else {
-            btnRatings.textContent = 'Hide ratings';
+            btnRatings.innerHTML = 'Hide <br> ratings';
             if (leaderboard.offsetLeft === 0) {
                 controlAvailable = false;
                 speedWindow.classList.add('hidden');
-            }
+            };
         };
         setTimeout(() => {
             leaderboard.style.overflow = '';
@@ -799,6 +801,7 @@ function restart() {
 controlAvailable = (helpWindow.offsetLeft === 0 && helpWindow.parentNode)  ? false : true;
 
 initLeaderTable();
+toggleHelp();
 
 for (let button of buttons) {
     button.addEventListener('click', e => {
