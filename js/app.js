@@ -516,6 +516,8 @@ class Selector {
     letsBegin() {
         this.chosen = true;
         this.sprite = 'images/Selector-green.png';
+        selectText.style.background = 'linear-gradient(90deg, transparent, #89df84, transparent)';
+        selectWindow.style.opacity = 0;
         const clearBg = setInterval(() => {
             this.bgOpacity -= 0.05;
             if (this.bgOpacity < 0.05) clearInterval(clearBg)
@@ -527,6 +529,9 @@ class Selector {
             item.lastTime = Date.now();
         });
         setTimeout(() => {
+            selectWindow.classList.add('hidden');
+            selectWindow.style.opacity = 1;
+            selectText.style.background = '';
             player.startGame = true;
             this.chosen = false;
             this.sprite = 'images/Selector.png';
@@ -556,7 +561,6 @@ class Selector {
                 initialSpeed = (initialSpeed * 10 - 5) / 10;    // - 0.5
                 break;
             case 'spacebar':
-                speedWindow.classList.add('hidden');
                 this.letsBegin();
                 break;
             default:
@@ -653,7 +657,8 @@ const btnSubmit = document.querySelector('.results #btn-submit') || document.cre
 const helpWindow = document.querySelector('.slide.help') || document.createElement('div');
 const displayedScore = document.getElementById('current-score') || document.createElement('span');
 const gameField = document.getElementById('canvas-wrapper') || document.body;
-const speedWindow = document.getElementById('speed-window') || document.createElement('div');
+const selectWindow = document.getElementById('select-scr-wrapper') || document.createElement('div');
+const selectText = document.querySelector('.select-text') || document.createElement('div');
 const displayedSpeed = document.getElementById('game-speed') || document.createElement('span');
 const leaderboard = document.querySelector('.leaderboard') || document.createElement('div');
 const leaderTable = document.getElementById('leaderboard-body') || document.createElement('tbody');
@@ -668,27 +673,46 @@ const nameForm = document.querySelector('.print-your-name');
 
 
 function slideToggle(obj, callback = () => {}, height) {
+
+    function deleteBorders() {
+        if (obj.clientHeight === 0) obj.style.border = 'none';
+        obj.removeEventListener('transitionend', deleteBorders);
+    }
+
     callback();
-    if (obj.offsetHeight) {
+
+    obj.addEventListener('transitionend', deleteBorders);
+
+
+    if (obj.style.display === 'none' || obj.style.visibility === 'hidden') {
+        obj.style.display = '';
+        obj.style.visibility = '';
+    } else if (getComputedStyle(obj).display === 'none' || getComputedStyle(obj).visibility === 'hidden') {
+        obj.style.display = 'block';
+        obj.style.visibility = 'visible'
+    }
+
+    if (obj.clientHeight) {
         obj.style.height = '0px';
     } else {
         obj.style.height = height || '100%';
+        obj.style.border = '';
     };
 }
 
 
 function toggleHelp() {
     slideToggle(helpWindow, () => {
-        if (helpWindow.offsetHeight > 0) {
+        if (helpWindow.clientHeight > 0) {
             controlAvailable = true;
             btnCloseHelp.classList.add('hidden');
-            if (!player.startGame) speedWindow.classList.remove('hidden');
+            if (!player.startGame) selectWindow.classList.remove('hidden');
             btnSecretHeader.style.cursor = 'pointer';
             btnSecretHeader.title = 'Show game instructions';
         } else {
-            if (helpWindow.offsetLeft === 0) {
+            if (helpWindow.parentNode.offsetLeft === 0) {
                 controlAvailable = false;
-                speedWindow.classList.add('hidden');
+                selectWindow.classList.add('hidden');
             }
         };
         setTimeout(() => {
@@ -700,21 +724,17 @@ function toggleHelp() {
 
 function toggleLeaderboard() {
     slideToggle(leaderboard, () => {
-        leaderboard.style.overflow = 'hidden';
-        if (leaderboard.offsetHeight > 0) {
+        if (leaderboard.clientHeight > 0) {
             btnRatings.innerHTML = 'Show <br> ratings';
             controlAvailable = true;
-            if (!player.startGame) speedWindow.classList.remove('hidden');
+            if (!player.startGame) selectWindow.classList.remove('hidden');
         } else {
             btnRatings.innerHTML = 'Hide <br> ratings';
-            if (leaderboard.offsetLeft === 0) {
+            if (leaderboard.parentNode.offsetLeft === 0) {
                 controlAvailable = false;
-                speedWindow.classList.add('hidden');
+                selectWindow.classList.add('hidden');
             };
         };
-        setTimeout(() => {
-            leaderboard.style.overflow = '';
-        }, 500);
     });
 }
 
@@ -793,12 +813,12 @@ function restart() {
     if (leaderboard.offsetHeight != 0) toggleLeaderboard();
     if (helpWindow.offsetHeight != 0) toggleHelp();
     controlAvailable = true;
-    speedWindow.classList.remove('hidden');
+    selectWindow.classList.remove('hidden');
 }
 
 
 // If elements cover the game field - disable control
-controlAvailable = (helpWindow.offsetLeft === 0 && helpWindow.parentNode)  ? false : true;
+controlAvailable = (helpWindow.parentNode.offsetLeft === 0 && helpWindow.parentNode)  ? false : true;
 
 initLeaderTable();
 toggleHelp();
@@ -881,14 +901,13 @@ let touchstartTime;
 let selectTimer;
 
 gameField.addEventListener('touchstart', e => {
-    if (e.target.tagName === "CANVAS") e.preventDefault();
-
+    if (e.target.tagName === "CANVAS" || e.target === selectWindow) e.preventDefault();
     touchstartX = e.touches[0].pageX;
     touchstartY = e.touches[0].pageY;
     touchstartTime = e.timeStamp;
 
     // In case of long touch
-    if (!player.startGame && e.target.tagName === "CANVAS") {
+    if (!player.startGame && e.target.tagName === "CANVAS" || e.target === selectWindow) {
         selectTimer = setTimeout(() => {
                 selector.handleInput('spacebar');
         }, 600);
@@ -909,7 +928,7 @@ gameField.addEventListener('touchend', e => {
         result = moveY > 0 ? 'up' : 'down';
     };
 
-    if (!player.startGame && e.target.tagName === "CANVAS") {
+    if (!player.startGame && e.target.tagName === "CANVAS" || e.target === selectWindow) {
         selector.handleInput(result);
     } else {
         player.handleInput(result);

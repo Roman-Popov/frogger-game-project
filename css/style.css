@@ -22,7 +22,7 @@ body {
     align-items: center;
     width: 90%;
     font-family: 'Cinzel Decorative', cursive;
-    color: rgba(245, 245, 220);
+    color: rgb(245, 245, 220);
     text-shadow: black 0 0 0.25em,
                      black 0 0 0.25em,
                      black 0 0 0.25em,
@@ -134,7 +134,28 @@ canvas {
     left: 0;
 }
 
-#speed-window {
+#select-scr-wrapper {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    transition: opacity 0.5s linear;
+}
+
+.select-text {
+    position: absolute;
+    width: 100%;
+    color: #f5f5dc;
+    font-weight: bold;
+    font-size: 2em;
+    top: calc(37% - 0.375em);
+    background: linear-gradient(90deg, transparent, rgba(208, 209, 130, 0.7), transparent);
+    text-shadow: black 0 0 0.25em,
+                     black 0 0 0.25em,
+                     black 0 0 0.25em,
+                     black 0 0 0.25em;
+}
+
+.speed-window {
     position: absolute;
     left: 5%;
     bottom: 0.75%;
@@ -150,12 +171,20 @@ canvas {
     border-radius: 1em;
     background: #254c2e;
     color: #f5f5dc;
-    transition: opacity 0.5s linear;
 }
 
 
 
 /* SLIDE SECTION */
+
+.scroll-wrapper-lb,
+.scroll-wrapper-help {
+    visibility: hidden;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
 
 .slide {
     position: absolute;
@@ -165,8 +194,8 @@ canvas {
     display: flex;
     flex-direction: column;
     overflow-x: auto;
+    border: 2px solid #6d6477;
     transition: height 0.5s ease-in-out;
-    box-shadow: inset 0 0 0 2px #6d6477;
 }
 
 .slide h2 {
@@ -180,10 +209,13 @@ canvas {
 .leaderboard {
     height: 0;
     padding: 0 5%;
+    display: none;
 }
 
 .leaderboard table {
     border-collapse: collapse;
+    margin-bottom: 1.5em;
+    width: 100%;
 }
 
 .leaderboard tr {

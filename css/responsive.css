@@ -1,17 +1,29 @@
 @media screen and (min-width: 1200px) {
-    .leaderboard {
-        padding: 0 3%;
+
+    .scroll-wrapper-lb,
+    .scroll-wrapper-help {
         border-radius: 20px;
         width: 70%;
+        position: absolute;
+    }
+
+    .scroll-wrapper-lb {
         right: -75%;
         z-index: 5;
     }
 
-    .help {
-        border-radius: 20px;
-        width: 70%;
+    .scroll-wrapper-help {
         left: -75%;
         direction: rtl;
+    }
+
+    .leaderboard,
+    .help {
+        border-radius: 20px;
+    }
+
+    .leaderboard {
+        padding: 0 3%;
     }
 }
 
