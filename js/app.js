@@ -122,7 +122,6 @@ class Player {
                     if (this.x != 404 && !this.aboard) this.x += 101;
                     break;
                 default:
-                    console.log('Wrong key! To move your character use arrow keys or swipe.')
                     break;
             }
         }
@@ -419,7 +418,7 @@ class Heart extends Item {
             } else {
                 player.score += 250 * speed;
                 displayedScore.textContent = player.score;
-                console.log('score = ', player.score);
+                console.log('Current score = ', player.score);
             }
         }
     }
@@ -521,10 +520,14 @@ class Selector {
             this.bgOpacity -= 0.05;
             if (this.bgOpacity < 0.05) clearInterval(clearBg)
         }, 50)
+        player.updateSpeed();
+        let speedMult = 1 / Math.pow(initialSpeed, 0.6);
+        items.forEach(item => {
+            item.showTimeDelay *= speedMult;
+            item.lastTime = Date.now();
+        });
         setTimeout(() => {
             player.startGame = true;
-            player.updateSpeed();
-            items.forEach(item => item.lastTime = Date.now())
             this.chosen = false;
             this.sprite = 'images/Selector.png';
             this.bgOpacity = 0.5;
@@ -540,14 +543,28 @@ class Selector {
             case 'right':
                 if (this.x != 404 && !this.chosen) this.x += 101;
                 break;
+            case 'up':
+                initialSpeed = (initialSpeed * 10 + 1) / 10;  // + 0.1
+                break;
+            case 'upX5':
+                initialSpeed = (initialSpeed * 10 + 5) / 10;  // + 0.5
+                break;
+            case 'down':
+                initialSpeed = (initialSpeed * 10 - 1) / 10;    // - 0.1
+                break;
+            case 'downX5':
+                initialSpeed = (initialSpeed * 10 - 5) / 10;    // - 0.5
+                break;
             case 'spacebar':
+                speedWindow.classList.add('hidden');
                 this.letsBegin();
                 break;
             default:
-                console.log('Wrong key! To move a selector use left and right swipe / arrow keys ' +
-                            'or use long-touch / ctrl + spacebar to select the character');
                 break;
         }
+        if (initialSpeed > 2.5) initialSpeed = 2.5;
+        if (initialSpeed < 0.5) initialSpeed = 0.5;
+        displayedSpeed.textContent = Math.round(initialSpeed * 100) + '%';
     }
 
 
@@ -607,9 +624,9 @@ document.addEventListener('keyup', e => {
     let allowedKeys = {
         32: e.ctrlKey ? 'spacebar' : false,
         37: 'left',
-        38: 'up',
+        38: e.ctrlKey ? 'upX5' : 'up',
         39: 'right',
-        40: 'down'
+        40: e.ctrlKey ? 'downX5' : 'down'
     };
 
     if (!e.repeat && controlAvailable) {
@@ -636,6 +653,8 @@ const btnSubmit = document.querySelector('.results #btn-submit') || document.cre
 const helpWindow = document.querySelector('.slide.help') || document.createElement('div');
 const displayedScore = document.getElementById('current-score') || document.createElement('span');
 const gameField = document.getElementById('canvas-wrapper') || document.body;
+const speedWindow = document.getElementById('speed-window') || document.createElement('div');
+const displayedSpeed = document.getElementById('game-speed') || document.createElement('span');
 const leaderboard = document.querySelector('.leaderboard') || document.createElement('div');
 const leaderTable = document.getElementById('leaderboard-body') || document.createElement('tbody');
 const popUpWindow = document.querySelector('.pop-up') || document.createElement('section');
@@ -666,7 +685,10 @@ function toggleHelp() {
             btnSecretHeader.style.cursor = 'pointer';
             btnSecretHeader.title = 'Show game instructions';
         } else {
-            if (helpWindow.offsetLeft === 0) controlAvailable = false;
+            if (helpWindow.offsetLeft === 0) {
+                controlAvailable = false;
+                speedWindow.classList.add('hidden');
+            }
         };
         setTimeout(() => {
             btnCloseHelp.classList.remove('hidden');
@@ -683,7 +705,10 @@ function toggleLeaderboard() {
             controlAvailable = true;
         } else {
             btnRatings.textContent = 'Hide ratings';
-            if (leaderboard.offsetLeft === 0) controlAvailable = false;
+            if (leaderboard.offsetLeft === 0) {
+                controlAvailable = false;
+                speedWindow.classList.add('hidden');
+            }
         };
         setTimeout(() => {
             leaderboard.style.overflow = '';
@@ -764,12 +789,14 @@ function restart() {
     allEnemies = [new Enemy(), new Enemy(), new Enemy(), new Enemy()];
     items.forEach(item => item.presence = false);
     if (leaderboard.offsetHeight != 0) toggleLeaderboard();
+    if (helpWindow.offsetHeight != 0) toggleHelp();
     controlAvailable = true;
+    speedWindow.classList.remove('hidden');
 }
 
 
-
-controlAvailable = helpWindow.offsetLeft === 0 ? false : true;
+// If elements cover the game field - disable control
+controlAvailable = (helpWindow.offsetLeft === 0 && helpWindow.parentNode)  ? false : true;
 
 initLeaderTable();
 
@@ -851,14 +878,14 @@ let touchstartTime;
 let selectTimer;
 
 gameField.addEventListener('touchstart', e => {
-    if (controlAvailable) e.preventDefault();
+    if (e.target.tagName === "CANVAS") e.preventDefault();
 
     touchstartX = e.touches[0].pageX;
     touchstartY = e.touches[0].pageY;
     touchstartTime = e.timeStamp;
 
     // In case of long touch
-    if (!player.startGame && controlAvailable) {
+    if (!player.startGame && e.target.tagName === "CANVAS") {
         selectTimer = setTimeout(() => {
                 selector.handleInput('spacebar');
         }, 600);
@@ -873,14 +900,13 @@ gameField.addEventListener('touchend', e => {
     let moveY = touchstartY - e.changedTouches[0].pageY;
     let result;
 
-    if (Math.abs(moveX) > Math.abs(moveY) &&
-       (Math.abs(moveX) > 10 || Math.abs(moveY) > 10)) {
+    if (Math.abs(moveX) > Math.abs(moveY) && Math.abs(moveX) > 10) {
         result = moveX > 0 ? 'left' : 'right';
-    } else {
+    } else if (Math.abs(moveY) > 10) {
         result = moveY > 0 ? 'up' : 'down';
     };
 
-    if (!player.startGame && controlAvailable) {
+    if (!player.startGame && e.target.tagName === "CANVAS") {
         selector.handleInput(result);
     } else {
         player.handleInput(result);
