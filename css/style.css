@@ -252,6 +252,10 @@ canvas {
     direction: ltr;
 }
 
+.help p:last-of-type {
+    margin-bottom: 2em;
+}
+
 .wrapper-help {
     position: relative;
     padding: 0 2.2em 0 1.5em;
@@ -297,11 +301,6 @@ canvas {
 .help ul li:last-of-type,
 .help ol:last-of-type {
     margin-bottom: 1.5em;
-}
-
-.open-help-hint {
-    display: inline-block;
-    margin: 2em 0;
 }
 
 

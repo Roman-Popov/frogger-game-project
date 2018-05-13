@@ -162,7 +162,6 @@ class Player {
     update() {
         // if player collected all the letters
         if (letter.counter === letter.availableSprites.length && !this.stopGame) {
-            console.log('You have won!');
             allEnemies.forEach(enemy => enemy.speedMult = 10);  // All alive enemies are quickly escaping from the screen
             this.gameOver();
             allEnemies.forEach(enemy => enemy.dead = true)  // All enemies become ghosts
@@ -190,7 +189,6 @@ class Player {
                 this.x = 404;
                 this.y = 384;
                 this.aboard = false;
-                console.log(`Your score: ${this.score}`);
                 displayedScore.textContent = this.score;
             }
         }
@@ -207,7 +205,6 @@ class Player {
             this.lives -= 1;
 
             if (this.lives === 0) {
-                console.log('Game over')
                 this.sprite = 'images/ghost.png';   // Player become a ghost
                 this.gameOver();
             } else {
@@ -418,7 +415,6 @@ class Heart extends Item {
             } else {
                 player.score += 250 * speed;
                 displayedScore.textContent = player.score;
-                console.log('Current score = ', player.score);
             }
         }
     }
@@ -626,11 +622,11 @@ letter.availableSprites.forEach(() => collectedLetters.push(new LetterIcon()))
 // This listens for key presses and sends the keys to Player.handleInput() method
 document.addEventListener('keyup', e => {
     let allowedKeys = {
-        32: e.ctrlKey ? 'spacebar' : false,
+        32: (e.ctrlKey || e.metaKey) ? 'spacebar' : false,
         37: 'left',
-        38: e.ctrlKey ? 'upX5' : 'up',
+        38: (e.ctrlKey || e.metaKey) ? 'upX5' : 'up',
         39: 'right',
-        40: e.ctrlKey ? 'downX5' : 'down'
+        40: (e.ctrlKey || e.metaKey) ? 'downX5' : 'down'
     };
 
     if (!e.repeat && controlAvailable) {
@@ -647,29 +643,31 @@ document.addEventListener('keyup', e => {
 
    // >>> Page section >>>
 
-const buttons = document.getElementsByClassName('btn');
-const btnRestart = document.getElementById('restart') || document.createElement('button');
-const btnRatings = document.getElementById('ratings') || document.createElement('button');
-const btnClosePopUp = document.querySelector('.results>#btn-close-popup') || document.createElement('button');
-const btnCloseHelp = document.querySelector('.help #btn-close-help') || document.createElement('button');
-const btnSecretHeader = document.querySelector('h1') || document.createElement('h1');
-const btnSubmit = document.querySelector('.results #btn-submit') || document.createElement('button');
-const helpWindow = document.querySelector('.slide.help') || document.createElement('div');
-const displayedScore = document.getElementById('current-score') || document.createElement('span');
-const gameField = document.getElementById('canvas-wrapper') || document.body;
-const selectWindow = document.getElementById('select-scr-wrapper') || document.createElement('div');
-const selectText = document.querySelector('.select-text') || document.createElement('div');
-const displayedSpeed = document.getElementById('game-speed') || document.createElement('span');
-const leaderboard = document.querySelector('.leaderboard') || document.createElement('div');
-const leaderTable = document.getElementById('leaderboard-body') || document.createElement('tbody');
-const popUpWindow = document.querySelector('.pop-up') || document.createElement('section');
-const popUpHeader = document.querySelector('.pop-up-header') || document.createElement('h2');
-const resultMessage = document.getElementById('fin-message') || document.createElement('p');
-const resultLetters = document.getElementById('fin-letters') || document.createElement('span');
-const resultSpeed = document.getElementById('fin-speed') || document.createElement('span');
-const resultScore = document.getElementById('fin-score') || document.createElement('span');
-const nameField = document.getElementById('input-name');
-const nameForm = document.querySelector('.print-your-name');
+const buttons = document.getElementsByClassName('btn'),
+      btnRestart = document.getElementById('restart') || document.createElement('button'),
+      btnRatings = document.getElementById('ratings') || document.createElement('button'),
+      btnClosePopUp = document.querySelector('.results>#btn-close-popup') || document.createElement('button'),
+      btnCloseHelp = document.querySelector('.help #btn-close-help') || document.createElement('button'),
+      btnSecretHeader = document.querySelector('h1') || document.createElement('h1'),
+      btnSubmit = document.querySelector('.results #btn-submit') || document.createElement('button'),
+      helpWindow = document.querySelector('.slide.help') || document.createElement('div'),
+      displayedScore = document.getElementById('current-score') || document.createElement('span'),
+      gameField = document.getElementById('canvas-wrapper') || document.body,
+      selectWindow = document.getElementById('select-scr-wrapper') || document.createElement('div'),
+      selectText = document.querySelector('.select-text') || document.createElement('div'),
+      displayedSpeed = document.getElementById('game-speed') || document.createElement('span'),
+      leaderboard = document.querySelector('.leaderboard') || document.createElement('div'),
+      leaderTable = document.getElementById('leaderboard-body') || document.createElement('tbody'),
+      popUpWindow = document.querySelector('.pop-up') || document.createElement('section'),
+      popUpHeader = document.querySelector('.pop-up-header') || document.createElement('h2'),
+      resultMessage = document.getElementById('fin-message') || document.createElement('p'),
+      resultLetters = document.getElementById('fin-letters') || document.createElement('span'),
+      resultSpeed = document.getElementById('fin-speed') || document.createElement('span'),
+      resultScore = document.getElementById('fin-score') || document.createElement('span'),
+      nameField = document.getElementById('input-name'),
+      nameForm = document.querySelector('.print-your-name');
+
+let showHelpAgainHint = true;
 
 
 function slideToggle(obj, callback = () => {}, height) {
@@ -841,6 +839,10 @@ btnRatings.addEventListener('click', () => {
 });
 
 btnCloseHelp.addEventListener('click', () => {
+    if (showHelpAgainHint) {
+        alert('To open this instructions again just click the title «Diamond Rush»');
+        showHelpAgainHint = false;
+    }
     toggleHelp();
 });
 
